@@ -4,7 +4,10 @@ const showSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'BookingModel'
     },
-    _id: Number,
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'UserModel'
+    },
     status: Boolean,
     total: Number,
     is_complete: Boolean

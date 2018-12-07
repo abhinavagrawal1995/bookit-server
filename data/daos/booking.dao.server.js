@@ -1,20 +1,11 @@
-const userModel = require('../models/user.model.server')
+const bookingModel = require('../models/booking.model.server')
 
-truncateDatabase = () => {
-    return Promise.all([userModel.deleteMany({})
-    ])
-}
+createBooking = (userId, showId) => bookingModel.create(userId, showId)
 
-createUser = user => userModel.create(user)
+findAllBookings = () => bookingModel.find()
 
-findAllUsers = () => userModel.find()
+findBookingById = userId => bookingModel.findById(userId)
 
-findUserById = userId => userModel.findById(userId)
-
-
-deleteUser = userId => userModel.remove({
-    _id: userId
-})
 
 populateDatabase = () => {
     var inserts = [];
