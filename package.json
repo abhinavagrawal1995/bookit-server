@@ -9,6 +9,7 @@
   "author": "DB TEAM",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.16.4",
     "mongoose": "^5.3.14"
   }
 }
