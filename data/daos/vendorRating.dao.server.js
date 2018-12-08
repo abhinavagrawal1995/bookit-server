@@ -7,3 +7,8 @@ findVendorRatingByVendorId = (vendorId) => vendorRatingModel.findById(vendorId)
 // deleteUser = userId => userModel.remove({
 //     _id: userId
 // })
+
+module.exports = {
+    addVendorRating,
+    findVendorRatingByVendorId
+}

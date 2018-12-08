@@ -13,3 +13,12 @@ findShowByVendorId = vendorId => bookingModel.findById(vendorId)
 // deleteUser = userId => userModel.remove({
 //     _id: userId
 // })
+
+
+module.exports = {
+    addShow,
+    findAllShows,
+    findShowById,
+    findShowBySchedule,
+    findShowByVendorId
+}

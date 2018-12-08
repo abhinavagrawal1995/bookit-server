@@ -6,4 +6,11 @@ findAllTransactions = () => transactionModel.find()
 
 findTransactionsByUserId = userId => transactionModel.findById(userId)
 
-findTransactionByTransactionId = transactionId => transactionModel.findById(transactionId)
+findTransactionByTransactionId = (userId, transactionId) => transactionModel.findById({userId: userId, transactionId: transactionId})
+
+module.exports = {
+    createTransaction,
+    findAllTransactions,
+    findTransactionsByUserId,
+    findTransactionByTransactionId,
+}
