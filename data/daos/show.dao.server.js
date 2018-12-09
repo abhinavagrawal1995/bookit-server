@@ -4,14 +4,20 @@ addShow = show => showModel.create(show)
 
 findAllShows = () => showModel.find()
 
-findShowById = showId => showModel.findById({showId:showId})
+findShowById = showId => showModel.findById({showId: showId})
 
-findShowBySchedule = date => showModel.find({date:date})
+findShowBySchedule = date => showModel.find({date: date})
 
-findShowByMovie = imdbID => showModel.find({imdbID:imdbID});
+findShowByMovie = imdbID => showModel.find({imdbID: imdbID});
 
-deleteShowByMovie = (imdbID,theatreName,date,time) => showModel.remove({imdbID:imdbID, theatreName: theatreName,date:date,time:time});
+deleteShowByMovie = (imdbID, theatreName, date, time) => showModel.remove({
+    imdbID: imdbID,
+    theatreName: theatreName,
+    date: date,
+    time: time
+});
 
 module.exports = {
-    addShow, findAllShows, findShowById, findShowBySchedule,findShowByMovie,deleteShowByMovie
+    addShow, findAllShows, findShowById, findShowBySchedule, findShowByMovie, deleteShowByMovie
+
 }
