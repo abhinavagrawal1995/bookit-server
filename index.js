@@ -14,7 +14,7 @@ require('./data/db.js')()
 const cors = require('cors')
 const bodyParser = require('body-parser')
 
-app.use(cors)
+app.use(cors());
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 
 
 app.post('/user/register', bodyParser.json(), (req, res) => {
-    userInfo = req.query;
+    userInfo = req.body;
     username = userInfo["username"];
     firstName = userInfo["firstName"];
     lastName = userInfo["lastName"];
@@ -65,14 +65,13 @@ app.post('/user/register', bodyParser.json(), (req, res) => {
 });
 
 app.post('/user/login', (req, res) => {
-    userInfo = req.query;
+    userInfo = req.body;
     username = userInfo["username"];
     password = userInfo["password"];
     query = personDao.findPersonByCredentials(username, password).then(
-        (user) => {
-            if (user.length == 1) {
-                res.send("Login Successful!");
-                res.json(user);
+        (person) => {
+            if (person.length > 0) {
+                res.json(person);
             } else {
                 res.status(401);
                 res.send("Retry login with valid credentials!");
@@ -82,7 +81,7 @@ app.post('/user/login', (req, res) => {
 });
 
 app.post('/user/update', bodyParser.json(), (req, res) => {
-        userInfo = req.query;
+        userInfo = req.body;
         username = userInfo["username"];
         firstName = userInfo["firstName"];
         lastName = userInfo["lastName"];
@@ -135,7 +134,7 @@ app.post('/user/update', bodyParser.json(), (req, res) => {
 )
 
 app.post('/movie/add', bodyParser.json(), (req, res) => {
-    movieInfo = req.query;
+    movieInfo = req.body;
     imdbID = movieInfo["imdbID"];
     Title = movieInfo["Title"];
     Year = movieInfo["Year"];
@@ -174,7 +173,7 @@ app.get('/movie/summary', (req, res) => {
 });
 
 app.post('/movie/delete', (req, res) => {
-    movieInfo = req.query;
+    movieInfo = req.body;
     imdbID = movieInfo["imdbID"];
     movieDao.deleteMovie(imdbID).then(
         () => {
@@ -185,9 +184,9 @@ app.post('/movie/delete', (req, res) => {
 
 
 app.post('/show/add', bodyParser.json(), (req, res) => {
-    showInfo = req.query;
-    theatreName = req.query['vendor']['theatreName'];
-    imdbID = req.query['movie']['imdbID'];
+    showInfo = req.body;
+    theatreName = req.body['vendor']['theatreName'];
+    imdbID = req.body['movie']['imdbID'];
     date = showInfo["date"];
     time = showInfo["time"];
     price = showInfo["price"];
@@ -207,8 +206,8 @@ app.post('/show/add', bodyParser.json(), (req, res) => {
 //getshowbyvendorId
 
 app.get('/show/movie', (req, res) => {
-    showInfo = req.query;
-    imdbID = req.query['movie']['imdbID'];
+    showInfo = req.body;
+    imdbID = req.body['movie']['imdbID'];
     showDao.findShowByMovie(imdbID).then(
         (shows) => {
             res.json(shows);
@@ -217,9 +216,9 @@ app.get('/show/movie', (req, res) => {
 });
 
 app.post('/show/remove', (req, res) => {
-    showInfo = req.query;
-    imdbID = req.query['movie']['imdbID'];
-    theatreName = req.query['vendor']['theatreName'];
+    showInfo = req.body;
+    imdbID = req.body['movie']['imdbID'];
+    theatreName = req.body['vendor']['theatreName'];
     date = showInfo["date"];
     time = showInfo["time"];
     showDao.deleteShowByMovie(imdbID, theatreName, date, time).then(
@@ -230,7 +229,7 @@ app.post('/show/remove', (req, res) => {
 });
 
 app.post('/booking/create', bodyParser.json(), (req, res) => {
-    bookingInfo = req.query;
+    bookingInfo = req.body;
     userId = bookingInfo['user']['id'];
     showId = bookingInfo['shows']['id'];
     seats = bookingInfo["seats"];
@@ -250,7 +249,7 @@ app.post('/booking/create', bodyParser.json(), (req, res) => {
 });
 
 app.get('/booking/user', (req, res) => {
-    bookingInfo = req.query;
+    bookingInfo = req.body;
 
     userId = bookingInfo['user']['personId'];
     bookingDao.findBookingByUser(userId).then(
@@ -261,7 +260,7 @@ app.get('/booking/user', (req, res) => {
 });
 
 app.get('/booking/find', (req, res) => {
-    bookingInfo = req.query;
+    bookingInfo = req.body;
     _id = bookingInfo['id'];
     bookingDao.findBookingById(_id).then(
         (shows) => {
@@ -271,7 +270,7 @@ app.get('/booking/find', (req, res) => {
 });
 
 app.post('/booking/remove', (req, res) => {
-    bookingInfo = req.query;
+    bookingInfo = req.body;
     _id = bookingInfo['id'];
     bookingDao.deleteBookingById(_id).then(
         () => {
