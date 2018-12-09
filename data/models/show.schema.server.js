@@ -4,9 +4,13 @@ const showSchema = mongoose.Schema({
         type: String,
         ref: 'MovieModel'
     },
-    theatreName: {
+    // theatreName: {
+    //     type: String,
+    //     ref: 'VendorModel'
+    // },
+    personId: {
         type: String,
-        ref: 'VendorModel'
+        ref: 'PersonModel'
     },
     date: String,
     time: String,

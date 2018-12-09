@@ -1,23 +1,32 @@
 const showModel = require('../models/show.model.server')
+const personModel = require('../models/person.model.server');
+const personDao = require('./person.dao.server');
+
 
 addShow = show => showModel.create(show)
 
 findAllShows = () => showModel.find()
 
-findShowById = showId => showModel.findById({showId: showId})
+findShowById = showId => showModel.findById(showId)
 
 findShowBySchedule = date => showModel.find({date: date})
 
 findShowByMovie = imdbID => showModel.find({imdbID: imdbID});
 
-deleteShowByMovie = (imdbID, theatreName, date, time) => showModel.remove({
+
+findShowByVendor = personId =>
+    showModel.find({personId: personId});
+
+
+deleteShowByMovie = (imdbID, personId, date, time) => showModel.remove({
     imdbID: imdbID,
-    theatreName: theatreName,
+    personId: personId,
     date: date,
     time: time
 });
 
+
 module.exports = {
-    addShow, findAllShows, findShowById, findShowBySchedule, findShowByMovie, deleteShowByMovie
+    addShow, findAllShows, findShowById, findShowBySchedule, findShowByMovie, deleteShowByMovie, findShowByVendor
 
 }
