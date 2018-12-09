@@ -14,6 +14,8 @@ require('./data/db.js')()
 const cors = require('cors')
 const bodyParser = require('body-parser')
 
+app.use(cors)
+
 app.get('/', (req, res) => {
     res.send('Hello World!')
 });
