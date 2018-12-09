@@ -9,6 +9,11 @@ const addressDao = require('./data/daos/address.dao.server');
 const movieDao = require('./data/daos/movie.dao.server');
 const showDao = require('./data/daos/show.dao.server');
 const bookingDao = require('./data/daos/booking.dao.server');
+const bookingModel = require('./data/models/booking.model.server');
+const showModel = require('./data/models/show.model.server');
+const movieModel = require('./data/models/movie.model.server');
+const personModel = require('./data/models/person.model.server');
+
 
 require('./data/db.js')()
 const cors = require('cors')
@@ -20,6 +25,98 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 });
 
+
+
+app.post('/reset', bodyParser.json(), (req, res) => {
+    Promise.all([
+        bookingModel.deleteMany({}),
+        showModel.deleteMany({}),
+        movieModel.deleteMany({}),
+        personModel.deleteMany({})
+    ]).then(() =>{
+        persons=[{
+            username : "admin",
+            password : "admin",
+            firstName : "Admin",
+            lastName : "Admin",
+            phone : 98976557865,
+            role : "admin",
+            user : {
+                dob: ""
+            },
+            vendor : {
+                theatreName : ""
+            },},{
+            username : "alice",
+            password : "alice",
+            firstName : "Alice",
+            lastName : "Wonder",
+            phone : 98976389865,
+            role : "vendor",
+            user : {
+                dob: ""
+            },
+            vendor : {
+                theatreName : "Regal"
+            },},
+            {
+                username : "bob",
+                password : "bob",
+                firstName : "Bob",
+                lastName : "Hope",
+                phone : 9897129865,
+                role : "user",
+                user : {
+                    "dob": "19/121993"
+                },
+                "vendor" : {
+                    "theatreName" : ""
+                },},{  "username" : "charlie",
+                password : "charlie",
+                firstName : "Charlie",
+                lastName : "Brown",
+                phone : 98971865,
+                role : "usher",
+                user : {
+                    dob: ""
+                },
+                vendor : {
+                    theatreName : ""
+                },}];
+            movies= [{imdbID: 'tt0372784',Title: 'Batman Begins', Year: '2005', imdbRating: '8.3', Poster: 'https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg',
+                Plot: 'After training with his mentor, Batman begins his fight to free crime-ridden Gotham City from corruption.',},
+                ];
+
+            shows = [{
+                imdbID: 'tt0372784',
+                theatreName: 'Regal',
+                date: '27/05',
+                time: '12:30',
+                price: '9.99',
+                id: 'asdasdsad'
+            }, {
+                imdbID: 'tt0372784',
+                theatreName: 'IMAX',
+                date: '27/05',
+                time: '12:30',
+                price: '19.99',
+                id: 'asdasdsad'
+            }]
+
+            bookings = [{}]
+
+
+        Promise.all([
+            ...persons.map(person => createPerson(person)),
+            ...movies.map(movie => createMovie(movie)),
+            ...shows.map(show => addShow(show)),
+            ...bookings.map(booking => createBooking(booking))
+        ]).then(() => {
+            res.send("Success")
+        });
+    }).catch(err=> res.send(err))
+
+})
 
 app.post('/user/register', bodyParser.json(), (req, res) => {
     userInfo = req.body;
@@ -72,15 +169,14 @@ app.post('/user/login', bodyParser.json(), (req, res) => {
     password = userInfo["password"];
     query = personDao.findPersonByCredentials(username, password).then(
         (person) => {
-            if (person.length > 0) {
-                res.json(person)
-
+            if (person.length == 1) {
+                res.json(person[0])
             } else {
                 res.status(401);
                 res.send("Invalid credentials!");
             }
         }
-    ) .catch(err => {
+    ).catch(err => {
         res.status(401);
         res.send("Please enter valid fields.")
     });
@@ -216,10 +312,10 @@ app.post('/movie/remove', bodyParser.json(), (req, res) => {
 app.post('/show/add', bodyParser.json(), (req, res) => {
     showInfo = req.body;
     personId = showInfo['person']['_id'];
-    imdbID = showInfo['movie']['imdbID'];
-    date = showInfo["date"];
-    time = showInfo["time"];
-    price = showInfo["price"];
+    imdbID = showInfo['show']['imdbID'];
+    date = showInfo['show']["date"];
+    time = showInfo['show']["time"];
+    price = showInfo['show']["price"];
     newShow = {
         imdbID: imdbID,
         personId: personId,
@@ -233,52 +329,49 @@ app.post('/show/add', bodyParser.json(), (req, res) => {
         }).catch(err => {
         res.status(401);
         res.send("Adding show operation failed!")
-    });;
+    });
+    ;
 });
 
 
-
 app.get('/show/movie', bodyParser.json(), (req, res) => {
-    showInfo = req.body;
+    showInfo = req.query;
     imdbID = showInfo['imdbID'];
+    personId = showInfo['person']['_id'];
+    personDao.findPersonById(personId)
+        .then(foundVendor => {
     movieDao.findMovieById(imdbID).then(foundMovies => {
-            showDao.findShowByMovie(imdbID).then(
-                (shows) => {
-                    for (var i = 0; i < shows.length; i++) {
-                        shows[i]._doc['movie'] = foundMovies[0]._doc;
-                    }
-                    res.json(shows);
-                }).catch(err => {
-                res.status(401);
-                res.send("Show does not exist!")
-            });
+        showDao.findShowByMovie(imdbID).then(
+            (shows) => {
+                for (var i = 0; i < shows.length; i++) {
+                    shows[i]._doc['movie'] = foundMovies[0]._doc;
+                    shows[i]._doc['vendor'] = foundVendor._doc;
+                }
+                res.json(shows);
+            }).catch(err => {
+            res.status(401);
+            res.send("Show does not exist!")
+        });
+    })
         }
     )
 });
 
+
+
+
+
+
+
 app.get('/show/vendor', bodyParser.json(), (req, res) => {
-    vendorInfo = req.body;
-    personId = vendorInfo['personId'];
-    movieId = vendorInfo['imdbID'];
-    personDao.findPersonById(personId)
-        .then(foundVendor => {
-            movieDao.findMovieById(movieId).then(foundMovies => {
-                    showDao.findShowByVendor(personId).then(
-                        (shows) => {
-                            for (var i = 0; i < shows.length; i++) {
-                                shows[i]._doc['vendor'] = foundVendor._doc;
-                                shows[i]._doc['movie'] = foundMovies[0]._doc;
-                            }
-                            res.json(shows);
-                        }).catch(err => {
-                        res.status(401);
-                        res.send("Show does not exist!")
-                    });
-                }
-            )
-
-        })
-
+    vendorInfo = req.query;
+    personId = vendorInfo['_id'];
+    showDao.findShowByVendor(personId).then((shows) => {
+        res.json(shows);
+    }).catch(err => {
+        res.status(401);
+        res.send("Show does not exist!")
+    })
 });
 
 
@@ -300,8 +393,8 @@ app.post('/show/remove', bodyParser.json(), (req, res) => {
 
 app.post('/booking/create', bodyParser.json(), (req, res) => {
     bookingInfo = req.body;
-    userId = bookingInfo['user']['id'];
-    showId = bookingInfo['shows']['id'];
+    userId = bookingInfo['user']['_id'];
+    showId = bookingInfo['show']['_id'];
     seats = bookingInfo["seats"];
     amountPaid = bookingInfo["amountPaid"];
 
@@ -318,11 +411,12 @@ app.post('/booking/create', bodyParser.json(), (req, res) => {
         }).catch(err => {
         res.status(401);
         res.send("Booking failed!")
-    });;
+    });
+    ;
 });
 
-app.get('/booking/user',bodyParser.json(), (req, res) => {
-    bookingInfo = req.body;
+app.get('/booking/user', bodyParser.json(), (req, res) => {
+    bookingInfo = req.query;
 
     username = bookingInfo['username'];
     userId = bookingInfo['userid'];
@@ -344,22 +438,30 @@ app.get('/booking/user',bodyParser.json(), (req, res) => {
     })
 });
 
-app.get('/booking/find',bodyParser.json(), (req, res) => {
-    bookingInfo = req.body;
-    _id = bookingInfo['id'];
-    bookingDao.findBookingById(_id).then(
-        (shows) => {
-            res.json(shows);
-        }
-    ).catch(err => {
-        res.status(401);
-        res.send("Booking does not exist!")
+app.get('/booking/find', bodyParser.json(), (req, res) => {
+    bookingInfo = req.query;
+    _id = bookingInfo['_id'];
+    username = bookingInfo['username'];
+    showId = bookingInfo['showId'];
+    personDao.findPersonByUsername(username).then(foundUsers => {
+        showDao.findShowById(showId).then(foundShow => {
+            bookingDao.findBookingById(_id).then(
+                (booking) => {
+                    booking._doc['user'] = foundUsers[0]._doc;
+                    booking._doc['show'] = foundShow._doc;
+                    res.json(booking);
+                }).catch(err => {
+                res.status(401);
+                res.send("User or Booking does not exist!")
+            });
+        })
     });
 });
 
+
 app.post('/booking/remove', bodyParser.json(), (req, res) => {
     bookingInfo = req.body;
-    _id = bookingInfo['id'];
+    _id = bookingInfo['_id'];
     bookingDao.deleteBookingById(_id).then(
         () => {
             res.send("Success");
