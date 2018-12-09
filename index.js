@@ -425,27 +425,39 @@ app.get('/booking/user', bodyParser.json(), (req, res) => {
             res.json(bookings);
         }).catch(err => {
         res.status(401);
-        res.send("User or Booking does not exist!")
+        res.send("Booking does not exist!")
     });
 });
 
 app.get('/booking/find', bodyParser.json(), (req, res) => {
     bookingInfo = req.query;
     _id = bookingInfo['_id'];
-    username = bookingInfo['username'];
+    userId = bookingInfo['userId'];
     showId = bookingInfo['showId'];
-    personDao.findPersonByUsername(username).then(foundUsers => {
+    personDao.findPersonById(userId).then(foundUser => {
         showDao.findShowById(showId).then(foundShow => {
             bookingDao.findBookingById(_id).then(
                 (booking) => {
-                    booking._doc['user'] = foundUsers[0]._doc;
+                    booking._doc['user'] = foundUser._doc;
                     booking._doc['show'] = foundShow._doc;
                     res.json(booking);
                 }).catch(err => {
                 res.status(401);
-                res.send("User or Booking does not exist!")
+                res.send("Booking does not exist!")
             });
         })
+    });
+});
+
+app.get('/booking/summary', bodyParser.json(), (req, res) => {
+    bookingInfo = req.query;
+    _id = bookingInfo['bookingId'];
+    bookingDao.findBookingById(_id).then(
+        (booking) => {
+            res.json(booking);
+        }).catch(err => {
+        res.status(401);
+        res.send("Booking does not exist!")
     });
 });
 
