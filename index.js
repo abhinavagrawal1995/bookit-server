@@ -26,8 +26,7 @@ app.get('/', (req, res) => {
 });
 
 
-
-app.post('/reset', bodyParser.json(), (req, res) => {
+app.get('/reset', bodyParser.json(), (req, res) => {
     Promise.all([
         bookingModel.deleteMany({}),
         showModel.deleteMany({}),
@@ -102,15 +101,10 @@ app.post('/reset', bodyParser.json(), (req, res) => {
                 price: '19.99',
                 id: 'asdasdsad'
             }]
-
-            bookings = [{}]
-
-
         Promise.all([
-            ...persons.map(person => createPerson(person)),
-            ...movies.map(movie => createMovie(movie)),
-            ...shows.map(show => addShow(show)),
-            ...bookings.map(booking => createBooking(booking))
+            ...persons.map(persons => createPerson(persons)),
+            ...movies.map(movies => createMovie(movies)),
+            ...shows.map(shows => addShow(shows)),
         ]).then(() => {
             res.send("Success")
         });
