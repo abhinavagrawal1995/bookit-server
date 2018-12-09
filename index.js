@@ -32,75 +32,86 @@ app.get('/reset', bodyParser.json(), (req, res) => {
         showModel.deleteMany({}),
         movieModel.deleteMany({}),
         personModel.deleteMany({})
-    ]).then(() =>{
-        persons=[{
-            username : "admin",
-            password : "admin",
-            firstName : "Admin",
-            lastName : "Admin",
-            phone : 98976557865,
-            role : "admin",
-            user : {
-                dob: ""
-            },
-            vendor : {
-                theatreName : ""
-            },},{
-            username : "alice",
-            password : "alice",
-            firstName : "Alice",
-            lastName : "Wonder",
-            phone : 98976389865,
-            role : "vendor",
-            user : {
-                dob: ""
-            },
-            vendor : {
-                theatreName : "Regal"
-            },},
-            {
-                username : "bob",
-                password : "bob",
-                firstName : "Bob",
-                lastName : "Hope",
-                phone : 9897129865,
-                role : "user",
-                user : {
-                    "dob": "19/121993"
-                },
-                "vendor" : {
-                    "theatreName" : ""
-                },},{  "username" : "charlie",
-                password : "charlie",
-                firstName : "Charlie",
-                lastName : "Brown",
-                phone : 98971865,
-                role : "usher",
-                user : {
+    ]).then(() => {
+        persons = [{
+                username: "admin",
+                password: "admin",
+                firstName: "Admin",
+                lastName: "Admin",
+                phone: 98976557865,
+                role: "admin",
+                user: {
                     dob: ""
                 },
-                vendor : {
-                    theatreName : ""
-                },}];
-            movies= [{imdbID: 'tt0372784',Title: 'Batman Begins', Year: '2005', imdbRating: '8.3', Poster: 'https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg',
-                Plot: 'After training with his mentor, Batman begins his fight to free crime-ridden Gotham City from corruption.',},
-                ];
-
-            shows = [{
-                imdbID: 'tt0372784',
-                theatreName: 'Regal',
-                date: '27/05',
-                time: '12:30',
-                price: '9.99',
-                id: 'asdasdsad'
+                vendor: {
+                    theatreName: ""
+                },
             }, {
-                imdbID: 'tt0372784',
-                theatreName: 'IMAX',
-                date: '27/05',
-                time: '12:30',
-                price: '19.99',
-                id: 'asdasdsad'
-            }]
+                username: "alice",
+                password: "alice",
+                firstName: "Alice",
+                lastName: "Wonder",
+                phone: 98976389865,
+                role: "vendor",
+                user: {
+                    dob: ""
+                },
+                vendor: {
+                    theatreName: "Regal"
+                },
+            },
+            {
+                username: "bob",
+                password: "bob",
+                firstName: "Bob",
+                lastName: "Hope",
+                phone: 9897129865,
+                role: "user",
+                user: {
+                    "dob": "19/121993"
+                },
+                "vendor": {
+                    "theatreName": ""
+                },
+            }, {
+                "username": "charlie",
+                password: "charlie",
+                firstName: "Charlie",
+                lastName: "Brown",
+                phone: 98971865,
+                role: "usher",
+                user: {
+                    dob: ""
+                },
+                vendor: {
+                    theatreName: ""
+                },
+            }
+        ];
+        movies = [{
+            imdbID: 'tt0372784',
+            Title: 'Batman Begins',
+            Year: '2005',
+            imdbRating: '8.3',
+            Poster: 'https://m.media-amazon.com/images/M/MV5BZmUwNGU2ZmItMmRiNC00MjhlLTg5YWUtODMyNzkxODYzMmZlXkEyXkFqcGdeQXVyNTIzOTk5ODM@._V1_SX300.jpg',
+            Plot: 'After training with his mentor, Batman begins his fight to free crime-ridden Gotham City from corruption.',
+        }, ];
+
+        shows = [{
+            imdbID: 'tt0372784',
+            theatreName: 'Regal',
+            date: '27/05',
+            time: '12:30',
+            price: '9.99',
+            id: 'asdasdsad'
+        }, {
+            imdbID: 'tt0372784',
+            theatreName: 'IMAX',
+            date: '27/05',
+            time: '12:30',
+            price: '19.99',
+            id: 'asdasdsad'
+        }]
         Promise.all([
             ...persons.map(persons => createPerson(persons)),
             ...movies.map(movies => createMovie(movies)),
@@ -108,7 +119,7 @@ app.get('/reset', bodyParser.json(), (req, res) => {
         ]).then(() => {
             res.send("Success")
         });
-    }).catch(err=> res.send(err))
+    }).catch(err => res.send(err))
 
 })
 
@@ -149,9 +160,9 @@ app.post('/user/register', bodyParser.json(), (req, res) => {
                 .then(created => {
                     res.send("Success");
                 }).catch(err => {
-                res.status(401);
-                res.send("Please enter valid fields.")
-            })
+                    res.status(401);
+                    res.send("Please enter valid fields.")
+                })
         }
     });
     query.exec()
@@ -177,42 +188,41 @@ app.post('/user/login', bodyParser.json(), (req, res) => {
 });
 
 app.post('/user/update', bodyParser.json(), (req, res) => {
-        userInfo = req.body;
-        _id = userInfo["_id"];
-        username = userInfo["username"];
-        firstName = userInfo["firstName"];
-        lastName = userInfo["lastName"];
-        password = userInfo["password"];
-        phone = userInfo["phone"];
-        dob = userInfo["user"]["dob"];
-        theatreName = userInfo["vendor"]["theatreName"];
-        role = userInfo["role"];
-        user = {
-            dob: dob
-        };
+    userInfo = req.body;
+    _id = userInfo["_id"];
+    username = userInfo["username"];
+    firstName = userInfo["firstName"];
+    lastName = userInfo["lastName"];
+    password = userInfo["password"];
+    phone = userInfo["phone"];
+    dob = userInfo["user"]["dob"];
+    theatreName = userInfo["vendor"]["theatreName"];
+    role = userInfo["role"];
+    user = {
+        dob: dob
+    };
 
-        vendor = {
-            theatreName: theatreName
-        };
-        person = {
-            username: username,
-            password: password,
-            firstName: firstName,
-            lastName: lastName,
-            phone: phone,
-            role: role,
-            user: user,
-            vendor: vendor
-        }
-        personDao.updatePerson(person)
-            .then(updated =>
-                res.json(updated))
-            .catch(err => {
-                res.status(401);
-                res.send("Could not update user.")
-            })
+    vendor = {
+        theatreName: theatreName
+    };
+    person = {
+        username: username,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        role: role,
+        user: user,
+        vendor: vendor
     }
-)
+    personDao.updatePerson(person)
+        .then(updated =>
+            res.json(updated))
+        .catch(err => {
+            res.status(401);
+            res.send("Could not update user.")
+        })
+})
 
 app.get('/user/all', bodyParser.json(), (req, res) => {
     personDao.findAllPerson().then(
@@ -268,9 +278,9 @@ app.post('/movie/add', bodyParser.json(), (req, res) => {
 
 
                 }).catch(err => {
-                res.status(401);
-                res.send("Please enter valid fields.")
-            })
+                    res.status(401);
+                    res.send("Please enter valid fields.")
+                })
         }
     });
 
@@ -321,10 +331,9 @@ app.post('/show/add', bodyParser.json(), (req, res) => {
         .then(created => {
             res.send("Success");
         }).catch(err => {
-        res.status(401);
-        res.send("Adding show operation failed!")
-    });
-    ;
+            res.status(401);
+            res.send("Adding show operation failed!")
+        });;
 });
 
 
@@ -334,21 +343,20 @@ app.get('/show/movie', bodyParser.json(), (req, res) => {
     personId = showInfo['person']['_id'];
     personDao.findPersonById(personId)
         .then(foundVendor => {
-    movieDao.findMovieById(imdbID).then(foundMovies => {
-        showDao.findShowByMovie(imdbID).then(
-            (shows) => {
-                for (var i = 0; i < shows.length; i++) {
-                    shows[i]._doc['movie'] = foundMovies[0]._doc;
-                    shows[i]._doc['vendor'] = foundVendor._doc;
-                }
-                res.json(shows);
-            }).catch(err => {
-            res.status(401);
-            res.send("Show does not exist!")
-        });
-    })
-        }
-    )
+            movieDao.findMovieById(imdbID).then(foundMovies => {
+                showDao.findShowByMovie(imdbID).then(
+                    (shows) => {
+                        for (var i = 0; i < shows.length; i++) {
+                            shows[i]._doc['movie'] = foundMovies[0]._doc;
+                            shows[i]._doc['vendor'] = foundVendor._doc;
+                        }
+                        res.json(shows);
+                    }).catch(err => {
+                    res.status(401);
+                    res.send("Show does not exist!")
+                });
+            })
+        })
 });
 
 
@@ -403,33 +411,22 @@ app.post('/booking/create', bodyParser.json(), (req, res) => {
             res.send("Success");
 
         }).catch(err => {
-        res.status(401);
-        res.send("Booking failed!")
-    });
-    ;
+            res.status(401);
+            res.send("Booking failed!")
+        });;
 });
 
 app.get('/booking/user', bodyParser.json(), (req, res) => {
-    bookingInfo = req.query;
+    userInfo = req.query;
 
-    username = bookingInfo['username'];
-    userId = bookingInfo['userid'];
-    showId = bookingInfo['showId'];
-    personDao.findPersonByUsername(username).then(foundUsers => {
-        showDao.findShowById(showId).then(foundShow => {
-            bookingDao.findBookingByUser(userId).then(
-                (bookings) => {
-                    for (var i = 0; i < bookings.length; i++) {
-                        bookings[i]._doc['user'] = foundUsers[0]._doc;
-                        bookings[i]._doc['show'] = foundShow._doc;
-                    }
-                    res.json(bookings);
-                }).catch(err => {
-                res.status(401);
-                res.send("User or Booking does not exist!")
-            });
-        })
-    })
+    userId = userInfo['_id'];
+    bookingDao.findBookingByUser(userId).then(
+        (bookings) => {
+            res.json(bookings);
+        }).catch(err => {
+        res.status(401);
+        res.send("User or Booking does not exist!")
+    });
 });
 
 app.get('/booking/find', bodyParser.json(), (req, res) => {
