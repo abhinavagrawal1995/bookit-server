@@ -1,3 +1,3 @@
 const mongoose = require('mongoose')
-const savedCardsSchema = require('./registeredUser.model.server');
+const savedCardsSchema = require('./user.model.server');
 module.exports = mongoose.model('SavedModel', savedCardsSchema);

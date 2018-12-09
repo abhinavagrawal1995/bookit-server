@@ -1,20 +1,15 @@
 const mongoose = require('mongoose');
 const showSchema = mongoose.Schema({
-    //_id: Number,
-    bookingId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'BookingModel'
-    },
-    movieId:{
-        type: mongoose.Schema.Types.ObjectId,
+    imdbID:{
+        type: String,
         ref: 'MovieModel'
     },
-    vendorId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'VendorRatingModel'
+    theatreName: {
+        type: String,
+        ref: 'VendorModel'
     },
-    schedule: Date,
-    capacity: Number,
-    price: Number
+    date: String,
+    time: String,
+    price: String
 }, {collection: 'shows'});
 module.exports = showSchema;

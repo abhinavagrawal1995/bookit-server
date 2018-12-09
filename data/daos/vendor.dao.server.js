@@ -11,6 +11,9 @@ findAllVendor = () => vendorModel.find();
 
 findVendorById = personId => vendorModel.findById(personId);
 
+updateVendorTheatre = (personId, theatreName) =>
+    vendorModel.update({personId: personId}, {$set: {theatreName:theatreName}});
+
 module.exports = {
-    createVendor, findAllVendor, findVendorById
+    createVendor, findAllVendor, findVendorById,updateVendorTheatre
 }

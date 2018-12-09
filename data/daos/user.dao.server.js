@@ -1,45 +1,34 @@
-const userModel = require('../models/user.model.server')
+const registeredUserModel = require('../models/user.model.server')
+const personModel = require('../models/person.model.server')
 
-truncateDatabase = () => {
-    return Promise.all([userModel.deleteMany({})
-    ])
-}
+createRegisteredUser = registeredUser => {
+    person = {
+        username: registeredUser["username"],
+        password: registeredUser["password"],
+        firstName: registeredUser["firstName"],
+        lastName: registeredUser["lastName"],
+        role: registeredUser["role"]
+    };
+    return personModel.create(person).then(
 
-createUser = user => userModel.create(user)
-
-findAllUsers = () => userModel.find()
-
-findUserById = userId => userModel.findById(userId)
-
-
-deleteUser = userId => userModel.remove({
-    _id: userId
-})
-
-populateDatabase = () => {
-    var inserts = [];
-    var alice = {
-        _id: 123,
-        username: 'alice',
-        password: 'alice',
-        firstName: 'Alice',
-        lastName: 'Wonderland',
-        userType: 'Student',
-        student: {
-            gradYear: 2020,
-            scholarship: 15000
+        res => {
+            newUser = {
+                personId: res._doc._id,
+                dob: registeredUser["dob"]
+            }
+            return registeredUserModel.create(newUser);
         }
-    }
-    inserts.push(createUser(alice))
-
-    return Promise.all(inserts);
+    );
+    // registeredUserModel.create({person: });
 }
+
+findAllRegisteredUser = () => registeredUserModel.find();
+
+findRegisteredUserById = personId => registeredUserModel.findById(personId);
+
+updateRegisteredUserDob = (personId, dob) =>
+    registeredUserModel.update({personId: personId}, {$set: {dob:dob}});
 
 module.exports = {
-    truncateDatabase,
-    populateDatabase,
-    createUser,
-    deleteUser,
-    findAllUsers,
-    findUserById,
+    createRegisteredUser, findAllRegisteredUser, findRegisteredUserById, updateRegisteredUserDob
 }

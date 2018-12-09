@@ -1,36 +1,16 @@
 const bookingModel = require('../models/booking.model.server')
 
-createBooking = (userId, showId) => bookingModel.create(userId, showId)
+createBooking = (booking) => bookingModel.create(booking);
 
-findAllBookings = () => bookingModel.find()
+findAllBookings = () => bookingModel.find();
 
-findBookingById = userId => bookingModel.findById(userId)
+findBookingByUser = userId => bookingModel.find({userId:userId});
 
+findBookingById = bookingId => bookingModel.findById(bookingId);
 
-populateDatabase = () => {
-    var inserts = [];
-    var alice = {
-        _id: 123,
-        username: 'alice',
-        password: 'alice',
-        firstName: 'Alice',
-        lastName: 'Wonderland',
-        userType: 'Student',
-        student: {
-            gradYear: 2020,
-            scholarship: 15000
-        }
-    }
-    inserts.push(createUser(alice))
+deleteBookingById  = (_id) => bookingModel.remove({_id:_id});
 
-    return Promise.all(inserts);
-}
 
 module.exports = {
-    truncateDatabase,
-    populateDatabase,
-    createUser,
-    deleteUser,
-    findAllUsers,
-    findUserById,
+    createBooking,findAllBookings,findBookingByUser,findBookingById,deleteBookingById
 }
