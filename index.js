@@ -81,7 +81,7 @@ app.post('/user/login', (req, res) => {
     );
 });
 
-app.post('/updateuser', bodyParser.json(), (req, res) => {
+app.post('/user/update', bodyParser.json(), (req, res) => {
         userInfo = req.query;
         username = userInfo["username"];
         firstName = userInfo["firstName"];
