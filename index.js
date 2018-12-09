@@ -32,21 +32,21 @@ app.post('/user/register', bodyParser.json(), (req, res) => {
     theatreName = userInfo["theatreName"];
     role = userInfo["role"];
     user = {
-        dob:dob
+        dob: dob
     }
 
     vendor = {
         theatreName: theatreName
     }
     person = {
-        username:username,
-        password:password,
-        firstName:firstName,
-        lastName:lastName,
-        phone:phone,
-        role:role,
-        user :user,
-        vendor:vendor
+        username: username,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        role: role,
+        user: user,
+        vendor: vendor
     }
 
     query = personDao.findPersonByUsername(username);
@@ -58,23 +58,30 @@ app.post('/user/register', bodyParser.json(), (req, res) => {
             personDao.createPerson(person)
                 .then(created => {
                     res.send("Success");
-                })
+                }).catch(err => {
+                res.status(401);
+                res.send("Please enter valid fields.")
+            })
         }
     });
     query.exec()
 });
 
-app.post('/user/login', (req, res) => {
+app.post('/user/login', bodyParser.json(), (req, res) => {
     userInfo = req.body;
     username = userInfo["username"];
     password = userInfo["password"];
     query = personDao.findPersonByCredentials(username, password).then(
         (person) => {
             if (person.length > 0) {
-                res.json(person);
+                res.json(person)
+                    .catch(err => {
+                        res.status(401);
+                        res.send("Please enter valid fields.")
+                    })
             } else {
                 res.status(401);
-                res.send("Retry login with valid credentials!");
+                res.send("Invalid credentials!");
             }
         }
     );
@@ -82,56 +89,60 @@ app.post('/user/login', (req, res) => {
 
 app.post('/user/update', bodyParser.json(), (req, res) => {
         userInfo = req.body;
+        _id = userInfo["_id"];
         username = userInfo["username"];
         firstName = userInfo["firstName"];
         lastName = userInfo["lastName"];
+        password = userInfo["password"];
         phone = userInfo["phone"];
+        dob = userInfo["user"]["dob"];
+        theatreName = userInfo["vendor"]["theatreName"];
         role = userInfo["role"];
-        promises = []
-        if (role == "user") {
-            dob = userInfo["dob"];
-            personDao.findPersonByUsername(username).then(
-                (user) => {
-                    personId = user._id
-                    userDao.updateUserDob(personId, dob);
-                    res.send("Login Successful!");
-                }
-            )
-        } else if (role == "vendor") {
-            theatreName = userInfo["theatreName"];
-            personDao.findPersonByUsername(username).then(
-                (user) => {
-                    personId = user._id;
-                    vendorDao.updateVendorTheatre(personId, theatreName);
-                    res.send("Login Successful!");
-                }
-            )
-        }
-        updatedPerson = {
-            firstName: "firstName",
-            lastName: "lastName"
-        }
-        updatedAddress = {
-            address1: "address1",
-            address2: "address2",
-            city: "city",
-            state: "state",
-            zip: "zip"
-        }
+        user = {
+            dob: dob
+        };
 
-        personDao.findPersonByUsername(username).then(
-            (user) => {
-                personId = user._id;
-                personDao.updatePerson(personId, updatedPerson);
-                phoneDao.updatePhone(personId, phone);
-                addressDao.updateAddress(personId, updatedAddress);
-                res.send("Update person Successful!");
-            }
-        )
-
-        query = personDao.findPersonByUsername(username);
+        vendor = {
+            theatreName: theatreName
+        };
+        person = {
+            username: username,
+            password: password,
+            firstName: firstName,
+            lastName: lastName,
+            phone: phone,
+            role: role,
+            user: user,
+            vendor: vendor
+        }
+        personDao.updatePerson(person)
+            .then(updated =>
+                res.json(updated))
+            .catch(err => {
+                res.status(401);
+                res.send("Could not update user.")
+            })
     }
 )
+
+app.get('/user/all', bodyParser.json(), (req, res) => {
+    personDao.findAllPerson().then(
+        (persons) => {
+            res.json(persons);
+        }
+    )
+});
+
+
+app.post('/user/remove', bodyParser.json(), (req, res) => {
+    userInfo = req.body;
+    _id = userInfo['_id'];
+    personDao.deletePerson(_id).then(
+        () => {
+            res.send("Success");
+        }
+    )
+});
 
 app.post('/movie/add', bodyParser.json(), (req, res) => {
     movieInfo = req.body;
@@ -140,7 +151,9 @@ app.post('/movie/add', bodyParser.json(), (req, res) => {
     Year = movieInfo["Year"];
     imdbRating = movieInfo["imdbRating"];
     Poster = movieInfo["Poster"];
+    Plot = movieInfo["Plot"];
     query = movieDao.findMovieById(imdbID);
+
     query.then(movie => {
         if (movie.length > 0) {
             res.status(401);
@@ -151,11 +164,16 @@ app.post('/movie/add', bodyParser.json(), (req, res) => {
                 Title: Title,
                 Year: Year,
                 imdbRating: imdbRating,
-                Poster: Poster
+                Poster: Poster,
+                Plot: Plot
             }
             movieDao.createMovie(newMovie)
                 .then(created => {
-                    res.send("Success");
+                    res.send("Success")
+                        .catch(err => {
+                            res.status(401);
+                            res.send("Please enter valid fields.")
+                        })
 
                 })
         }
@@ -164,7 +182,7 @@ app.post('/movie/add', bodyParser.json(), (req, res) => {
     query.exec()
 });
 
-app.get('/movie/summary', (req, res) => {
+app.get('/movie/summary', bodyParser.json(), (req, res) => {
     movieDao.findAllMovie().then(
         (movies) => {
             res.json(movies);
@@ -172,12 +190,16 @@ app.get('/movie/summary', (req, res) => {
     )
 });
 
-app.post('/movie/delete', (req, res) => {
+app.post('/movie/delete', bodyParser.json(), (req, res) => {
     movieInfo = req.body;
     imdbID = movieInfo["imdbID"];
     movieDao.deleteMovie(imdbID).then(
         () => {
-            res.send("Success");
+            res.send("Success")
+                .catch(err => {
+                    res.status(401);
+                    res.send("Please enter valid movie.")
+                });
         }
     )
 });
@@ -215,7 +237,7 @@ app.get('/show/movie', (req, res) => {
     )
 });
 
-app.post('/show/remove', (req, res) => {
+app.post('/show/remove', bodyParser.json(), (req, res) => {
     showInfo = req.body;
     imdbID = req.body['movie']['imdbID'];
     theatreName = req.body['vendor']['theatreName'];
@@ -269,7 +291,7 @@ app.get('/booking/find', (req, res) => {
     )
 });
 
-app.post('/booking/remove', (req, res) => {
+app.post('/booking/remove', bodyParser.json(), (req, res) => {
     bookingInfo = req.body;
     _id = bookingInfo['id'];
     bookingDao.deleteBookingById(_id).then(
