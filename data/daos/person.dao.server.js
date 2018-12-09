@@ -1,7 +1,8 @@
 const personModel = require('../models/person.model.server');
 
 
-createPerson = person => personModel.create(person);
+createPerson = person =>
+    personModel.create(person);
 
 findAllPerson = () => personModel.find();
 

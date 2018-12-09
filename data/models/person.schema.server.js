@@ -9,9 +9,10 @@ const personSchema = mongoose.Schema({
     firstName: String,
     lastName: String,
     role: String,
+    phone: Number,
     vendor: VendorSchema,
     admin: AdminSchema,
     critic: CriticSchema,
-    admin: UserSchema
+    user: UserSchema
 }, {collection: 'person'});
 module.exports = personSchema;

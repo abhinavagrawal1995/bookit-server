@@ -1,7 +1,7 @@
 const registeredUserModel = require('../models/user.model.server')
 const personModel = require('../models/person.model.server')
 
-createRegisteredUser = registeredUser => {
+createUser = registeredUser => {
     person = {
         username: registeredUser["username"],
         password: registeredUser["password"],
@@ -13,7 +13,6 @@ createRegisteredUser = registeredUser => {
 
         res => {
             newUser = {
-                personId: res._doc._id,
                 dob: registeredUser["dob"]
             }
             return registeredUserModel.create(newUser);
@@ -30,5 +29,5 @@ updateRegisteredUserDob = (personId, dob) =>
     registeredUserModel.update({personId: personId}, {$set: {dob:dob}});
 
 module.exports = {
-    createRegisteredUser, findAllRegisteredUser, findRegisteredUserById, updateRegisteredUserDob
+    createUser, findAllRegisteredUser, findRegisteredUserById, updateRegisteredUserDob
 }

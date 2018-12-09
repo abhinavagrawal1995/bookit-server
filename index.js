@@ -19,36 +19,58 @@ app.get('/', (req, res) => {
 });
 
 
-app.post('user/register', bodyParser.json(), (req, res) => {
+app.post('/user/register', bodyParser.json(), (req, res) => {
     userInfo = req.query;
     username = userInfo["username"];
     firstName = userInfo["firstName"];
     lastName = userInfo["lastName"];
     password = userInfo["password"];
+    phone = userInfo["phone"];
     dob = userInfo["dob"];
+    theatreName = userInfo["theatreName"];
+    role = userInfo["role"];
+    user = {
+        dob:dob
+    }
+
+    vendor = {
+        theatreName: theatreName
+    }
+    person = {
+        username:username,
+        password:password,
+        firstName:firstName,
+        lastName:lastName,
+        phone:phone,
+        role:role,
+        user :user,
+        vendor:vendor
+    }
+
     query = personDao.findPersonByUsername(username);
     query.then(persons => {
         if (persons.length > 0) {
             res.status(401);
             res.send("Username already exists.");
         } else {
-            userDao.createUser(userInfo)
+            personDao.createPerson(person)
                 .then(created => {
                     res.send("Success");
                 })
         }
-    })
+    });
     query.exec()
 });
 
-app.post('user/login', (req, res) => {
+app.post('/user/login', (req, res) => {
     userInfo = req.query;
     username = userInfo["username"];
     password = userInfo["password"];
     query = personDao.findPersonByCredentials(username, password).then(
-        (users) => {
-            if (users.length > 0) {
+        (user) => {
+            if (user.length == 1) {
                 res.send("Login Successful!");
+                res.json(user);
             } else {
                 res.status(401);
                 res.send("Retry login with valid credentials!");
@@ -62,11 +84,6 @@ app.post('/updateuser', bodyParser.json(), (req, res) => {
         username = userInfo["username"];
         firstName = userInfo["firstName"];
         lastName = userInfo["lastName"];
-        address1 = userInfo["address1"];
-        address2 = userInfo["address2"];
-        city = userInfo["city"];
-        state = userInfo["state"];
-        zip = userInfo["zip"];
         phone = userInfo["phone"];
         role = userInfo["role"];
         promises = []
@@ -149,7 +166,6 @@ app.post('/movie/add', bodyParser.json(), (req, res) => {
 app.get('/movie/summary', (req, res) => {
     movieDao.findAllMovie().then(
         (movies) => {
-
             res.json(movies);
         }
     )
